@@ -76,14 +76,10 @@ class FactlinkBlacklist
   end
 
   def initialize(blacklist)
-    @blacklist = blacklist
+    @blacklist = Regexp.union blacklist
   end
 
   def matches?(str)
-    @blacklist.each do |regex|
-      return true if regex.match(str)
-    end
-
-    false
+    @blacklist.match(str)
   end
 end
