@@ -3,13 +3,13 @@ require "factlink_blacklist/version"
 class FactlinkBlacklist
   def self.domain domain
     regexdomain = domain.gsub(/\./, '\\\.')
-    r = "https?:\\\/\\\/([^/]*\\\.)?#{regexdomain}\\\/?"
+    r = "^https?://([^/]*\\.)?#{regexdomain}([:/]|$)"
     Regexp.new r
   end
 
   def self.strict_domain domain
     regexdomain = domain.gsub(/\./, '\\\.')
-    r = "https?:\\\/\\\/#{regexdomain}\\\/?"
+    r = "^https?://#{regexdomain}([:/]|$)"
     Regexp.new r
   end
 
