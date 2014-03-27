@@ -82,4 +82,7 @@ class FactlinkBlacklist
   def matches?(str)
     @blacklist.match(str)
   end
+  def to_s
+    @blacklist.to_s
+  end
 end
