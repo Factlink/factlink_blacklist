@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+$:.unshift 'lib'
+require 'factlink_blacklist'
+puts FactlinkBlacklist.default.to_s
