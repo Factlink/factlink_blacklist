@@ -2,15 +2,15 @@ require "factlink_blacklist/version"
 
 class FactlinkBlacklist
   def self.domain domain
-    regexdomain = domain.gsub(/\./, '\\\.')
-    r = "^https?://([^/]*\\.)?#{regexdomain}([:/]|$)"
-    Regexp.new r
+    host_regex "([^/]*\\.)?" + domain.gsub(/\./, '\\\.')
   end
 
   def self.strict_domain domain
-    regexdomain = domain.gsub(/\./, '\\\.')
-    r = "^https?://#{regexdomain}([:/]|$)"
-    Regexp.new r
+    host_regex domain.gsub(/\./, '\\\.')
+  end
+
+  def self.host_regex host_regex
+    "https?://#{host_regex}([:/].*)?"
   end
 
   def self.default
@@ -76,13 +76,14 @@ class FactlinkBlacklist
   end
 
   def initialize(blacklist)
-    @blacklist = Regexp.union blacklist
+    @regex_string = '^(' + blacklist.join('|') + ')$'
+    @regex = Regexp.new @regex_string
   end
 
   def matches?(str)
-    @blacklist.match(str)
+    !@regex.match(str).nil?
   end
   def to_s
-    @blacklist.to_s
+    @regex_string
   end
 end

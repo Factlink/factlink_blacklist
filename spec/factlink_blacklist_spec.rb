@@ -25,37 +25,37 @@ describe FactlinkBlacklist do
   end
 
   describe ".domain" do
-    let(:regex) { FactlinkBlacklist.domain('foo.com') }
+    let(:regex) { FactlinkBlacklist.new [ FactlinkBlacklist.domain('foo.com') ] }
 
     it "should match the domain" do
-      expect(regex.match('http://foo.com')).to be_truthy
-      expect(regex.match('http://foo.com/')).to be_truthy
-      expect(regex.match('https://foo.com/')).to be_truthy
-      expect(regex.match('https://fooacom/')).to be_falsey
+      expect(regex.matches?('http://foo.com')).to be_truthy
+      expect(regex.matches?('http://foo.com/')).to be_truthy
+      expect(regex.matches?('https://foo.com/')).to be_truthy
+      expect(regex.matches?('https://fooacom/')).to be_falsey
     end
 
     it "should match subdomains" do
-      expect(regex.match('http://bar.foo.com')).to be_truthy
-      expect(regex.match('http://bar.foo.com/')).to be_truthy
-      expect(regex.match('http://barfoo.com/')).to be_falsey
-      expect(regex.match('http://bar.com/arg.foo.com/')).to be_falsey
+      expect(regex.matches?('http://bar.foo.com')).to be_truthy
+      expect(regex.matches?('http://bar.foo.com/')).to be_truthy
+      expect(regex.matches?('http://barfoo.com/')).to be_falsey
+      expect(regex.matches?('http://bar.com/arg.foo.com/')).to be_falsey
     end
   end
 
   describe ".strict_domain" do
-    let(:regex) { FactlinkBlacklist.strict_domain('foo.com') }
+    let(:regex) { FactlinkBlacklist.new [ FactlinkBlacklist.strict_domain('foo.com') ]}
 
     it "should match the domain" do
-      expect(regex.match('http://foo.com')).to be_truthy
-      expect(regex.match('http://foo.com:80')).to be_truthy
-      expect(regex.match('http://foo.com:80/')).to be_truthy
-      expect(regex.match('http://foo.com/')).to be_truthy
-      expect(regex.match('https://foo.com/')).to be_truthy
-      expect(regex.match('https://fooacom/')).to be_falsey
+      expect(regex.matches?('http://foo.com')).to be_truthy
+      expect(regex.matches?('http://foo.com:80')).to be_truthy
+      expect(regex.matches?('http://foo.com:80/')).to be_truthy
+      expect(regex.matches?('http://foo.com/')).to be_truthy
+      expect(regex.matches?('https://foo.com/')).to be_truthy
+      expect(regex.matches?('https://fooacom/')).to be_falsey
     end
     it "should not match subdomains" do
-      expect(regex.match('http://bar.foo.com')).to be_falsey
-      expect(regex.match('http://bar.foo.com/')).to be_falsey
+      expect(regex.matches?('http://bar.foo.com')).to be_falsey
+      expect(regex.matches?('http://bar.foo.com/')).to be_falsey
     end
   end
 
@@ -72,7 +72,7 @@ describe FactlinkBlacklist do
   describe ".default" do
     let(:defaultlist) { FactlinkBlacklist.default }
     it "should not match blog.factlink.com" do
-      expect(defaultlist.matches?('https://blog.factlink.com/')).to be_falsey
+      expect(defaultlist.matches?('https://factlink.com/blog/')).to be_falsey
     end
     it "should match facebook.com" do
       expect(defaultlist.matches?('https://facebook.com/')).to be_truthy
