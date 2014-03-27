@@ -14,10 +14,8 @@ class FactlinkBlacklist
   end
 
   def self.default
-    @@default ||= new [
-      domain('fct.li'),
-      /^http:\/\/localhost[:\/]/,
-    ] + privacy + flash + frames + paywall + browserpages + content_security_policy
+    @@default ||= new [ domain('fct.li'), ] +
+                          localhost + privacy + flash + frames + paywall + browserpages + content_security_policy
   end
 
   def self.privacy
@@ -41,6 +39,14 @@ class FactlinkBlacklist
     [
       domain('kiprecepten.nl'),
       domain('grooveshark.com'),
+    ]
+  end
+
+  def self.localhost
+    [
+        strict_domain('localhost'),
+        strict_domain('127.0.0.1'),
+        strict_domain('::1'),
     ]
   end
 
