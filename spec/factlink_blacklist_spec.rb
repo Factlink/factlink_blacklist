@@ -1,29 +1,27 @@
 require_relative '../lib/factlink_blacklist.rb'
 describe FactlinkBlacklist do
   subject do
-    FactlinkBlacklist.new([
-      /^http(s)?:\/\/([^\/]+\.)?facebook\.com/,
-      /^http(s)?:\/\/([^\/]+\.)?factlink\.com/,
-      /^http(s)?:\/\/([^\/]+\.)?twitter\.com/,
-    ])
+    FactlinkBlacklist.default
   end
 
   describe "#should_return_true_on_match" do
+    it { expect(subject.matches?('http://facebook.com/')).to be_truthy }
     it { expect(subject.matches?('http://facebook.com')).to be_truthy }
   end
 
   describe "#should_return_false_when_no_match" do
     it { expect(subject.matches?('http://google.com')).to be_falsey }
+    it { expect(subject.matches?(' http://facebook.com')).to be_falsey }
   end
 
   describe "#should_also_match_non-first_blacklist_item" do
     it { expect(subject.matches?('http://twitter.com')).to be_truthy }
-    it { expect(subject.matches?('http://factlink.com')).to be_truthy }
+    it { expect(subject.matches?('http://dropbox.com')).to be_truthy }
   end
 
   describe "#should_also_match_subdomains" do
-    it { expect(subject.matches?('http://static.demo.factlink.com')).to be_truthy }
-    it { expect(subject.matches?('http://demo.factlink.com')).to be_truthy }
+    it { expect(subject.matches?('http://static.demo.dropbox.com')).to be_truthy }
+    it { expect(subject.matches?('http://demo.dropbox.com')).to be_truthy }
   end
 
   describe ".domain" do
@@ -49,6 +47,8 @@ describe FactlinkBlacklist do
 
     it "should match the domain" do
       expect(regex.match('http://foo.com')).to be_truthy
+      expect(regex.match('http://foo.com:80')).to be_truthy
+      expect(regex.match('http://foo.com:80/')).to be_truthy
       expect(regex.match('http://foo.com/')).to be_truthy
       expect(regex.match('https://foo.com/')).to be_truthy
       expect(regex.match('https://fooacom/')).to be_falsey
@@ -58,6 +58,16 @@ describe FactlinkBlacklist do
       expect(regex.match('http://bar.foo.com/')).to be_falsey
     end
   end
+
+
+  describe "#localhost" do
+    let(:regex) { FactlinkBlacklist.default }
+
+    it "should match localhost" do expect(regex.matches?('http://localhost/')).to be_truthy end
+    it "should match 127.0.0.1" do expect(regex.matches?('http://127.0.0.1/')).to be_truthy end
+    it "should match ::1" do expect(regex.matches?('http://::1/')).to be_truthy end
+  end
+
 
   describe ".default" do
     let(:defaultlist) { FactlinkBlacklist.default }
