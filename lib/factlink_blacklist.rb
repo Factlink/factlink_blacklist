@@ -83,6 +83,7 @@ class FactlinkBlacklist
   def matches?(str)
     !@regex.match(str).nil?
   end
+  
   def to_s
     @regex_string
   end
