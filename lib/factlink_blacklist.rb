@@ -15,7 +15,13 @@ class FactlinkBlacklist
 
   def self.default
     @@default ||= new [ domain('fct.li'), ] +
-                          localhost + privacy + flash + frames + paywall + browserpages + content_security_policy
+                          localhost + 
+                          privacy + 
+                          flash + 
+                          frames + 
+                          paywall +
+                          browserpages +
+                          content_security_policy
   end
 
   def self.privacy
