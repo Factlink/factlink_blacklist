@@ -83,6 +83,8 @@ class FactlinkBlacklist
 
   def initialize(blacklist)
     @regex_string = '^(' + blacklist.join('|') + ')$'
+    # we can't use Regexp.union because our regex needs to be JS-compatible and Regexp.union includes ruby-isms
+    # Similarly, \A isn't allowed
     @regex = Regexp.new @regex_string
   end
 
