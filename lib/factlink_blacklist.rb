@@ -2,22 +2,26 @@ require "factlink_blacklist/version"
 
 class FactlinkBlacklist
   def self.domain domain
-    regexdomain = domain.gsub(/\./, '\\\.')
-    r = "https?:\\\/\\\/([^/]*\\\.)?#{regexdomain}\\\/?"
-    Regexp.new r
+    host_regex "([^/]*\\.)?" + domain.gsub(/\./, '\\\.')
   end
 
   def self.strict_domain domain
-    regexdomain = domain.gsub(/\./, '\\\.')
-    r = "https?:\\\/\\\/#{regexdomain}\\\/?"
-    Regexp.new r
+    host_regex domain.gsub(/\./, '\\\.')
+  end
+
+  def self.host_regex host_regex
+    "https?://#{host_regex}([:/].*)?"
   end
 
   def self.default
-    @@default ||= new [
-      domain('fct.li'),
-      /^http:\/\/localhost[:\/]/,
-    ] + privacy + flash + frames + paywall + browserpages + content_security_policy
+    @@default ||= new [ domain('fct.li'), ] +
+                          localhost + 
+                          privacy + 
+                          flash + 
+                          frames + 
+                          paywall +
+                          browserpages +
+                          content_security_policy
   end
 
   def self.privacy
@@ -44,6 +48,14 @@ class FactlinkBlacklist
     ]
   end
 
+  def self.localhost
+    [
+        strict_domain('localhost'),
+        strict_domain('127.0.0.1'),
+        strict_domain('::1'),
+    ]
+  end
+
   def self.frames
     [
       domain('insiteproject.com'),
@@ -65,19 +77,22 @@ class FactlinkBlacklist
 
   def self.browserpages
     [
-    /\Aabout:.*/
+    "about:.*"
     ]
   end
 
   def initialize(blacklist)
-    @blacklist = blacklist
+    @regex_string = '^(' + blacklist.join('|') + ')$'
+    # we can't use Regexp.union because our regex needs to be JS-compatible and Regexp.union includes ruby-isms
+    # Similarly, \A isn't allowed
+    @regex = Regexp.new @regex_string
   end
 
   def matches?(str)
-    @blacklist.each do |regex|
-      return true if regex.match(str)
-    end
-
-    false
+    @regex.match(str) != nil
+  end
+  
+  def to_s
+    @regex_string
   end
 end
