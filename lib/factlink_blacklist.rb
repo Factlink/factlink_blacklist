@@ -77,7 +77,7 @@ class FactlinkBlacklist
 
   def self.browserpages
     [
-    /\Aabout:.*/
+    "about:.*"
     ]
   end
 
