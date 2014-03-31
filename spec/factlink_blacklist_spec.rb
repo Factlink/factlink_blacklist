@@ -1,12 +1,17 @@
 require_relative '../lib/factlink_blacklist.rb'
 describe FactlinkBlacklist do
   subject do
-    FactlinkBlacklist.default
+    FactlinkBlacklist.new [
+      FactlinkBlacklist.strict_domain('abcd.com'),
+      FactlinkBlacklist.domain('qwerty.org'),
+      FactlinkBlacklist.strict_domain('www.asdfg.com'),
+      FactlinkBlacklist.domain('blog.aeiou.nl'),
+    ]
   end
 
   describe "#should_return_true_on_match" do
-    it { expect(subject.matches?('http://facebook.com/')).to be_truthy }
-    it { expect(subject.matches?('http://facebook.com')).to be_truthy }
+    it { expect(subject.matches?('http://abcd.com/')).to be_truthy }
+    it { expect(subject.matches?('https://abcd.com')).to be_truthy }
   end
 
   describe "#should_return_false_when_no_match" do
@@ -15,13 +20,13 @@ describe FactlinkBlacklist do
   end
 
   describe "#should_also_match_non-first_blacklist_item" do
-    it { expect(subject.matches?('http://twitter.com')).to be_truthy }
-    it { expect(subject.matches?('http://dropbox.com')).to be_truthy }
+    it { expect(subject.matches?('http://www.asdfg.com')).to be_truthy }
+    it { expect(subject.matches?('http://blog.aeiou.nl')).to be_truthy }
   end
 
   describe "#should_also_match_subdomains" do
-    it { expect(subject.matches?('http://static.demo.dropbox.com')).to be_truthy }
-    it { expect(subject.matches?('http://demo.dropbox.com')).to be_truthy }
+    it { expect(subject.matches?('http://sub.blog.aeiou.nl')).to be_truthy }
+    it { expect(subject.matches?('http://dvorak.qwerty.org')).to be_truthy }
   end
 
   describe ".domain" do
@@ -37,6 +42,7 @@ describe FactlinkBlacklist do
     it "should match subdomains" do
       expect(regex.matches?('http://bar.foo.com')).to be_truthy
       expect(regex.matches?('http://bar.foo.com/')).to be_truthy
+      expect(regex.matches?('http://iron.bar.foo.com/')).to be_truthy
       expect(regex.matches?('http://barfoo.com/')).to be_falsey
       expect(regex.matches?('http://bar.com/arg.foo.com/')).to be_falsey
     end
@@ -48,7 +54,7 @@ describe FactlinkBlacklist do
     it "should match the domain" do
       expect(regex.matches?('http://foo.com')).to be_truthy
       expect(regex.matches?('http://foo.com:80')).to be_truthy
-      expect(regex.matches?('http://foo.com:80/')).to be_truthy
+      expect(regex.matches?('http://foo.com:12345/')).to be_truthy
       expect(regex.matches?('http://foo.com/')).to be_truthy
       expect(regex.matches?('https://foo.com/')).to be_truthy
       expect(regex.matches?('https://fooacom/')).to be_falsey
