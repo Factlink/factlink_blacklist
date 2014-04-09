@@ -38,6 +38,7 @@ class FactlinkBlacklist
       domain('facebook.com'),
       domain('mail.google.com'),
       domain('dropbox.com'),
+      domain('app.asana.com'),
     ]
   end
 
